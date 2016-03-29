@@ -110,5 +110,8 @@ input.port {
     </form>
 </div>
 <?php
+/* debug wp schedule events
+echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';
+*/
 }
 ?>
