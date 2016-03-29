@@ -10,13 +10,12 @@
 
  define('SCICAL_PLUGIN_PATH',  plugin_dir_path(__FILE__) );
 
-//require_once(ABSPATH . "/wp-load.php");
 require_once(SCICAL_PLUGIN_PATH . 'lib/iCalcreator.class.php');
+require_once(SCICAL_PLUGIN_PATH . 'lib/PHPMailerAutoload.php');
 require_once(SCICAL_PLUGIN_PATH . 'functions.php');
 require_once(SCICAL_PLUGIN_PATH . 'metabox.php');
 require_once(SCICAL_PLUGIN_PATH . 'send-report.php');
 require_once(SCICAL_PLUGIN_PATH . 'settings-page.php');
-
 
 if(!class_exists('SCiELOCalendar_Plugin')) {
     class SCiELOCalendar_Plugin {
