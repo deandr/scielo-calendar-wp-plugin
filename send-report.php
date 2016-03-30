@@ -29,6 +29,7 @@ function send_report($period = 'week'){
     */
 
     $event_list = '';
+    $total_events = 0;
     foreach($events as $event) {
 
         $start = get_post_meta($event->ID, 'start', true);
@@ -59,17 +60,22 @@ function send_report($period = 'week'){
             }
             $event_list .= '<br/>Onde: ' . $location;
             $event_list .= '</div>';
+            $total_events++;
 
         }
 
     }
     // if has event list send email
     if ( $event_list != ''){
-        send_email($event_list, $period);
+        send_email($event_list, $period, $total_events);
+    }else{
+        // register that 0 events are send
+        update_option('scieloevent_last_send', time() . '|' . $period . '|0');
+        header("Location: edit.php?post_type=event&page=scielo-calendar.php");
     }
 }
 
-function send_email($content, $period){
+function send_email($content, $period, $total_events){
     $config = get_option('scieloevent_config');
 
     $phpmailer = new PHPMailer;
@@ -83,13 +89,13 @@ function send_email($content, $period){
 
     $phpmailer->SetFrom($config['from_email'], $config['from_name']);
 
-    $body = "Bom dia, <br/><br/>";
+    $body = "Bom dia, <br/>";
     if ($period == 'day'){
         $subject = "Eventos do dia";
-        $body .= "<p>Os eventos do dia são: </p>";
+        $body .= "<p>Segue lista de eventos do dia: </p>";
     }else{
         $subject = "Eventos do semana";
-        $body .= "<p>Os eventos da semana: </p>";
+        $body .= "<p>Segue lista de eventos da semana: </p>";
     }
     $phpmailer->Subject = $subject;
 
@@ -102,12 +108,13 @@ function send_email($content, $period){
 
     $phpmailer->MsgHTML($body);
 
-    if(!$phpmailer->Send()) {
-      echo "Ocorreu um erro no envio da mensagem. Informação do erro: " . $phpmailer->ErrorInfo;
-    } else {
-      echo "Mensagem enviada!";
+    if ($phpmailer->Send()) {
+        update_option('scieloevent_last_send', time() . '|' . $period . '|' . $total_events );
+        header("Location: edit.php?post_type=event&page=scielo-calendar.php");
+    }else{
+        error_log("[scielo-calendar-plugin] Erro ao enviar mensagem, detalhes: " . $phpmailer->ErrorInfo);
     }
-    die();
 }
+
 
 ?>

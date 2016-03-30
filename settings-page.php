@@ -2,10 +2,22 @@
 
 function events_settings_page() {
     $last_sync = (int)get_option('scieloevent_last_sync');
+    $last_send = get_option('scieloevent_last_send');
+
+    $timezone_offet = get_option( 'gmt_offset' );
+    $format_date = get_option('date_format') . ' ' . get_option('time_format');
+
     if ($last_sync) {
-        $timezone_offet = get_option( 'gmt_offset' );
-        $format_date = get_option('date_format') . ' ' . get_option('time_format');
         $last_sync +=  $timezone_offet * 3600;
+    }
+    if ($last_send){
+        $last_send = preg_split("/\|/", $last_send);
+        $last_send[0] += $timezone_offet * 3600;
+        if ($last_send[1] == 'day'){
+            $last_send[1] = 'Eventos do dia';
+        }else{
+            $last_send[1] = 'Eventos da semana';
+        }
     }
 ?>
 
@@ -28,6 +40,12 @@ input.port {
 .box{
     margin: 20px 0 20px 0;
 }
+.last_info{
+    background: #fff;
+    margin: 10px 0 10px;
+    padding: 7px;
+    width: 70%;
+}
 </style>
 
 <div class="wrap">
@@ -41,22 +59,35 @@ input.port {
         ?>
 
         <h3>Sincronização</h3>
-        <a href="admin.php?action=reset" class="button button-primary">Apagar eventos</a>
         <a href="admin.php?action=sync" class="button button-primary">Sincronizar eventos</a>
-        <p><strong>Última sincronização:</strong><em>
-        <?php
-            if ($last_sync){
-                echo date_i18n($format_date, $last_sync);
-            }else{
-                echo 'Nunca';
-            }
-        ?>
-        </em></p>
+        <a href="admin.php?action=reset" class="button button-primary">Apagar eventos</a>
+        <div class="last_info">
+            <strong>Última sincronização:</strong><em>
+            <?php
+                if ($last_sync){
+                    echo date_i18n($format_date, $last_sync);
+                }else{
+                    echo 'Não disponível';
+                }
+            ?>
+            </em>
+        </div>
 
         <h3>Mensagens</h3>
-        <a href="?action=report&period=day" class="button button-primary">Enviar email eventos dia</a>
-        <a href="?action=report&period=week" class="button button-primary">Enviar email eventos semana</a>
+        <a href="admin.php?action=report&period=day" class="button button-primary">Enviar eventos do dia</a>
+        <a href="admin.php?action=report&period=week" class="button button-primary">Enviar eventos da semana</a>
 
+        <div class="last_info">
+            <strong>Último envio:</strong>
+
+            <?php
+                if ($last_send){
+                    echo '<em>' . date_i18n($format_date, $last_send[0]) . '</em>  <strong>Tipo: </strong>'  . $last_send[1] . '  <strong>Total de eventos: </strong>' . $last_send[2];
+                }else{
+                    echo 'Não disponível';
+                }
+            ?>
+        </div>
 
         <div class="box">
             <a href="#" id="show_hide_options">Mostrar/ocultar configurações</a>

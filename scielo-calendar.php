@@ -78,6 +78,7 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 		function register_settings() {
 		    register_setting( 'event-settings-group', 'scieloevent_config' );
 			register_setting( 'event-settings-group', 'scieloevent_last_sync' );
+            register_setting( 'event-settings-group', 'scieloevent_last_send' );
 			register_setting( 'event-settings-id-index', 'index' );
 		}
 
