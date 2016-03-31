@@ -39,15 +39,36 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
             // custom sort at list page
 			add_filter( 'manage_edit-event_sortable_columns', array(&$this, 'event_column_register_sortable') );
 			add_filter( 'request', array(&$this, 'event_column_orderby') );
+
+            // schedule daily and weekly events
+            if ( !wp_next_scheduled( 'scielo_sync_events' ) ) {
+                wp_schedule_event( current_time( 'timestamp' ), 'daily', 'scielo_sync_events');
+            }
+            add_action( 'scielo_sync_events', array($this, 'sync_admin_action') );
+
+
+            if ( !wp_next_scheduled( 'scielo_daily_report' ) ) {
+                wp_schedule_event( current_time( 'timestamp' ), 'daily', 'scielo_daily_report');
+            }
+            add_action( 'scielo_daily_report', array($this, 'send_daily_report') );
+
+            if ( !wp_next_scheduled( 'scielo_monday_report' ) ) {
+                wp_schedule_event( current_time( 'timestamp' ), 'daily', 'scielo_monday_report');
+            }
+            add_action( 'scielo_monday_report', array($this, 'send_monday_report') );
+
+        }
+
+        // Plugin deactivation
+        public static function deactivate(){
+            wp_clear_scheduled_hook('scielo_daily_report');
+            wp_clear_scheduled_hook('scielo_monday_report');
         }
 
 		// Plugin initialization
 		function plugin_init() {
 			$this->create_custom_post_type();
 			$this->config = get_option('scieloevent_config');
-
-            // schedule daily and weekly reports
-            $this->schedule_reports_event();
 
 		}
 
@@ -231,17 +252,7 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 			return $vars;
 		}
 
-        // create Monday event schedule option
-        function schedule_reports_event() {
-            if ( !wp_next_scheduled( 'send_monday_report' ) ) {
-                wp_schedule_event( current_time( 'timestamp' ), 'daily', 'send_monday_report');
-            }
-            if ( !wp_next_scheduled( 'send_daily_report' ) ) {
-                wp_schedule_event( current_time( 'timestamp' ), 'daily', 'send_daily_report');
-            }
-
-        }
-        // Monday report
+        // Weekly report
         function send_monday_report(){
             // Get the current date time
             $dateTime = new DateTime();
@@ -260,6 +271,4 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 }
 
 // Instantiate the plugin class
-if(class_exists('SCiELOCalendar_Plugin')){
-    $wp_plugin_template = new SCiELOCalendar_Plugin();
-}
+$scielo_calendar_plugin = new SCiELOCalendar_Plugin();

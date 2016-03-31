@@ -1,7 +1,6 @@
 <?php
 
 function send_report($period = 'week'){
-
     $config = get_option('scieloevent_config');
 
     $args = array(
@@ -65,14 +64,9 @@ function send_report($period = 'week'){
         }
 
     }
-    // if has event list send email
-    if ( $event_list != ''){
-        send_email($event_list, $period, $total_events);
-    }else{
-        // register that 0 events are send
-        update_option('scieloevent_last_send', time() . '|' . $period . '|0');
-        header("Location: edit.php?post_type=event&page=scielo-calendar.php");
-    }
+    // send email
+    send_email($event_list, $period, $total_events);
+
 }
 
 function send_email($content, $period, $total_events){
@@ -92,10 +86,18 @@ function send_email($content, $period, $total_events){
     $body = "Bom dia, <br/>";
     if ($period == 'day'){
         $subject = "Eventos do dia";
-        $body .= "<p>Segue lista de eventos do dia: </p>";
+        if ($total_events > 0){
+            $body .= "<p>Segue lista de eventos do dia: </p>";
+        }else{
+            $body .= "<p>Não existem eventos programados até o momento para hoje.</p>";
+        }
     }else{
         $subject = "Eventos do semana";
-        $body .= "<p>Segue lista de eventos da semana: </p>";
+        if ($total_events > 0){
+            $body .= "<p>Segue lista de eventos da semana: </p>";
+        }else{
+            $body .= "<p>Não existem eventos programados até o momento para a semana.</p>";
+        }
     }
     $phpmailer->Subject = $subject;
 
@@ -115,6 +117,5 @@ function send_email($content, $period, $total_events){
         error_log("[scielo-calendar-plugin] Erro ao enviar mensagem, detalhes: " . $phpmailer->ErrorInfo);
     }
 }
-
 
 ?>
