@@ -100,7 +100,6 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 		    register_setting( 'event-settings-group', 'scieloevent_config' );
 			register_setting( 'event-settings-group', 'scieloevent_last_sync' );
             register_setting( 'event-settings-group', 'scieloevent_last_send' );
-			register_setting( 'event-settings-id-index', 'index' );
 		}
 
 		// Action that perform read and parser of ICS file and load events in WordPress
@@ -108,11 +107,11 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 
 			if($this->config['feed_url'] != "") {
 
-				$id_index = get_option('index');
-				if(empty($id_index)) {
-					$id_index = array();
-					add_option('index', $id_index);
-				}
+                // delete previous imported events
+                $events = get_posts("post_type=event&posts_per_page=-1&post_status=any");
+    			foreach($events as $event) {
+    				wp_delete_post($event->ID, true);
+    			}
 
 				$events = sync_events($this->config['feed_url']);
 				foreach($events as $event) {
@@ -142,10 +141,6 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 							$data .= " 10:00:00";
 						}
 
-						if(in_array($event['uid'], $id_index)) {
-							continue;
-						}
-
 						$created_year = $event['created']['year'];
 						$created_month = sprintf("%02d", (int)$event['created']['month']);
 						$created_day = sprintf("%02d", $event['created']['day']);
@@ -173,11 +168,8 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 							add_post_meta($post_id, 'location', $event['location']);
 							add_post_meta($post_id, 'organizer', $event['organizer']);
 							add_post_meta($post_id, 'start_timestamp', ical2datetime($event['dtstart']));
-
-							$id_index[] = $event['uid'];
 						}
 					}
-					update_option('index', $id_index);
 				}
 
 				update_option('scieloevent_last_sync', time());
@@ -188,15 +180,13 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 
 		// Action that delete all events
 		function reset_admin_action() {
-			// clean index
-			update_option('index', array());
-
 			// delete events
 			$events = get_posts("post_type=event&posts_per_page=-1&post_status=any");
 			foreach($events as $event) {
 				wp_delete_post($event->ID, true);
 			}
-			header("Location: edit.php?post_type=event");
+            header("Location: edit.php?post_type=event");
+
 		}
 
 		// Action that send report email's
