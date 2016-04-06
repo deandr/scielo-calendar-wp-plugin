@@ -51,7 +51,6 @@ function format_ical_date($ical_date){
 }
 
 function ical2datetime($ical_date){
-
 	$timezone_offet = get_option('gmt_offset');
 
 	$str_date = $ical_date['year'] . '-' . $ical_date['month'] . '-' . $ical_date['day'];
@@ -71,9 +70,7 @@ function ical2datetime($ical_date){
 }
 
 function ical2date($ical_date){
-
 	$str_date = $ical_date['year'] . '-' . $ical_date['month'] . '-' . $ical_date['day'];
-
 	$date = strtotime($str_date);
 
 	return $date;

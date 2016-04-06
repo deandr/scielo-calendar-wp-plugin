@@ -132,25 +132,15 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 
 					// only import NEXT EVENTS
 					if ($event_date >= $current_date){
-
-						//print_r($event);
-
-						if(isset($event['dtstart']['hour']) and isset($event['dtstart']['min'])) {
-							$data .= " ".$event['dtstart']['hour'].":".$event['dtstart']['min'].":00";
-						} else {
-							$data .= " 10:00:00";
-						}
-
 						$created_year = $event['created']['year'];
 						$created_month = sprintf("%02d", (int)$event['created']['month']);
 						$created_day = sprintf("%02d", $event['created']['day']);
 						$created_date = sprintf("%s-%s-%s", $created_year, $created_month, $created_day);
 
 						// Create post object
-						$my_post = array(
+						$event_post = array(
 						  'post_title'		=> $event['summary'],
 						  'post_content'	=> $event['description'],
-						  'post_date'		=> $$created_date,
 						  'post_author'		=> 1,
 						  'post_type'   	=> 'event',
 						  'post_status' 	=> 'publish',
@@ -158,10 +148,9 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 						);
 
 						// Insert the post into the database
-						$post_id = wp_insert_post( $my_post );
+						$post_id = wp_insert_post( $event_post );
 
 						if((int)$post_id > 0) {
-							// $start_iso = $event['dtstart']['year'] . $event['dtstart']['month'] . $event['dtstart']['day'] . $event['dtstart']['hour'] . $event['dtstart']['min'] ;
 							add_post_meta($post_id, 'start', $event['dtstart']);
 							add_post_meta($post_id, 'end', $event['dtend']);
 							add_post_meta($post_id, 'duration', $event['duration']);

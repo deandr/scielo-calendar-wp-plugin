@@ -14,17 +14,16 @@ function send_report($period = 'week'){
     $events = get_posts($args);
 
     if ($period == 'day'){
-
         $range_start_date = strtotime(date('Y-m-d'));
         $range_end_date = strtotime(date('Y-m-d'));
     }else{
         $range_start_date = strtotime("previous monday", strtotime(date('Y-m-d')));
-        $range_end_date = strtotime("next friday", strtotime(date('Y-m-d')));
+        $range_end_date = strtotime("next saturday", strtotime(date('Y-m-d')));
     }
 
     /* debug
     echo "range_start_date: [" . $range_start_date ."]";
-    echo "range_end_date: [" . $range_start_date ."]";
+    echo "range_end_date: [" . $range_end_date ."]";
     */
 
     $event_list = '';
@@ -33,13 +32,16 @@ function send_report($period = 'week'){
 
         $start = get_post_meta($event->ID, 'start', true);
     	$end = get_post_meta($event->ID, 'end', true);
+        $start_timestamp = get_post_meta($event->ID, 'start_timestamp', true);
 
         $start_time = ical2date($start);
         $end_time = ical2date($end);
 
         /* debug
-        echo "start_time: [" . $start_time ."]";
-        echo "end_time: [" . $end_time ."]";
+        echo "start_time: [" . $start_time ."]\n";
+        echo "end_time: [" . $end_time ."]\n";
+        echo "start_timestamp: [" . $start_timestamp ."]\n";
+        print_r($event);
         */
 
         if ($start_time >= $range_start_date && $end_time <= $range_end_date){
@@ -47,7 +49,7 @@ function send_report($period = 'week'){
         	$location = get_post_meta($event->ID, 'location', true);
         	$organizer = get_post_meta($event->ID, 'organizer', true);
 
-            $event_list .= '<div style="margin: 20px 0 20px 0">';
+            $event_list .= '<div style="margin: 20px 0 20px 0; border-bottom: solid 1px #ccc">';
             $event_list .= '<strong>' . $event->post_title . '</strong><br/>';
             $event_list .= format_ical_date($start);
             $end_date = format_ical_date($end);
@@ -57,7 +59,10 @@ function send_report($period = 'week'){
             }else{
                 $event_list .= ' - ' . $end_date;
             }
-            $event_list .= '<br/>Onde: ' . $location;
+            if ($location != ''){
+                $event_list .= '<br/>Onde: ' . $location . '<br/>';
+            }
+            $event_list .= '<p>' . $event->post_content . '</p>';
             $event_list .= '</div>';
             $total_events++;
 
