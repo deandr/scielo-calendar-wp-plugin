@@ -44,7 +44,7 @@ function send_report($period = 'week'){
         print_r($event);
         */
 
-        if ($start_time >= $range_start_date && $end_time <= $range_end_date){
+        if ($start_time >= $range_start_date && $start_time <= $range_end_date){
             $duration = get_post_meta($event->ID, 'duration', true);
         	$location = get_post_meta($event->ID, 'location', true);
         	$organizer = get_post_meta($event->ID, 'organizer', true);

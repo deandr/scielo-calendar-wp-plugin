@@ -41,7 +41,7 @@ function sync_events($url) {
 
 function format_ical_date($ical_date){
 	if ($ical_date['hour'] != ''){
-		$format_date = 'd/m H:i';
+		$format_date = 'd/m \à\s H:i';
 	}else{
 		$format_date = 'd/m';
 	}
