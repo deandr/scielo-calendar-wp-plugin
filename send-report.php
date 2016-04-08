@@ -112,6 +112,9 @@ function send_email($content, $period, $total_events){
     $body .= "SciELO<br/>";
 
     $phpmailer->AddAddress($config['to_email'], $config['to_name']);
+    if ($config['bcc_email'] != ''){
+        $phpmailer->AddBCC($config['bcc_email']);
+    }
 
     $phpmailer->MsgHTML($body);
 

@@ -93,6 +93,7 @@ input.port {
             <a href="#" id="show_hide_options">Mostrar/ocultar configurações</a>
         </div>
         <div id="event_options" style="display: none">
+            <hr/>
             <table class="form-table">
                 <tbody>
                      <tr valign="top">
@@ -115,6 +116,11 @@ input.port {
                          <th scope="row">Email do destinatario:</th>
                          <td><input type="text" name="scieloevent_config[to_email]" value='<?php echo $config['to_email'] ?>' class="regular-text code"></td>
                      </tr>
+                     <tr valign="top">
+                         <th scope="row">Email de cópia (debug):</th>
+                         <td><input type="text" name="scieloevent_config[bcc_email]" value='<?php echo $config['bcc_email'] ?>' class="regular-text code"></td>
+                     </tr>
+
                      <tr valign="top">
                          <th scope="row">Servidor SMTP:</th>
                          <td><input type="text" name="scieloevent_config[smtp_server]" value='<?php echo $config['smtp_server'] ?>' class="regular-text code"></td>
