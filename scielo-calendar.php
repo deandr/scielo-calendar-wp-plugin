@@ -124,11 +124,11 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 					$current_date = new DateTime(date('Y-m-d'));
 					$event_date = new DateTime($data);
 
-					/*
-					print_r($event);
+                    /*
+                    print_r($event);
 					var_dump($current_date);
 					var_dump($event_date);
-					*/
+                    */
 
 					// only import NEXT EVENTS
 					if ($event_date >= $current_date){
@@ -136,11 +136,12 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 						$created_month = sprintf("%02d", (int)$event['created']['month']);
 						$created_day = sprintf("%02d", $event['created']['day']);
 						$created_date = sprintf("%s-%s-%s", $created_year, $created_month, $created_day);
+                        $description = str_replace(array("\r\n","\n\r","\\n","\r"), '<br/>', $event['description']);
 
-						// Create post object
+                        // Create post object
 						$event_post = array(
 						  'post_title'		=> $event['summary'],
-						  'post_content'	=> $event['description'],
+						  'post_content'	=> $description,
 						  'post_author'		=> 1,
 						  'post_type'   	=> 'event',
 						  'post_status' 	=> 'publish',
