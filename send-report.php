@@ -6,7 +6,7 @@ function send_report($period = 'week'){
     $args = array(
         'post_type' => 'event',
         'posts_per_page' => '-1',
-        'order_by' => 'meta_value',
+        'orderby' => 'meta_value_num',
         'meta_key' => 'start_timestamp',
         'order' => 'ASC'
     );
