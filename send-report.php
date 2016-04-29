@@ -13,13 +13,11 @@ function send_report($period = 'week'){
 
     $events = get_posts($args);
 
-    if ($period == 'day'){
-        $range_start_date = strtotime(date('Y-m-d'));
-        $range_end_date = strtotime(date('Y-m-d'));
-    }else{
-        $range_start_date = strtotime("previous monday", strtotime(date('Y-m-d')));
-        $range_end_date = strtotime("next saturday", strtotime(date('Y-m-d')));
-    }
+    // always get events of current week
+    $range_start_date = strtotime("previous monday", strtotime(date('Y-m-d')));
+    $range_end_date = strtotime("next saturday", strtotime(date('Y-m-d')));
+
+    $current_date = strtotime(date('Y-m-d'));
 
     /* debug
     echo "range_start_date: [" . $range_start_date ."]";
@@ -44,7 +42,19 @@ function send_report($period = 'week'){
         print_r($event);
         */
 
+        // check if event is in the current week
         if ($start_time >= $range_start_date && $start_time <= $range_end_date){
+
+            if ($period == 'day'){
+                // check if is a current day event
+                if ( ($start_time >= $current_date && $start_time <= $current_date) ||
+                     ($start_time <= $current_date && $end_time >= $current_date) ){
+                    // OR is event that starts before current date and continue
+                }else{
+                    continue;
+                }
+            }
+
             $duration = get_post_meta($event->ID, 'duration', true);
         	$location = get_post_meta($event->ID, 'location', true);
         	$organizer = get_post_meta($event->ID, 'organizer', true);
