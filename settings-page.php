@@ -74,8 +74,6 @@ input.port {
         </div>
 
         <h3>Mensagens</h3>
-        <a href="admin.php?action=report&period=day" class="button button-primary">Enviar eventos do dia</a>
-        <a href="admin.php?action=report&period=week" class="button button-primary">Enviar eventos da semana</a>
 
         <div class="last_info">
             <strong>Último envio:</strong>

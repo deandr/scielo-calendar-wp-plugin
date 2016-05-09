@@ -112,26 +112,15 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
     			foreach($events as $event) {
     				wp_delete_post($event->ID, true);
     			}
+                // get previous saturdar as start date for import
+                $week_start_date = strtotime("previous saturday", strtotime(date('Y-m-d')));
 
 				$events = sync_events($this->config['feed_url']);
 				foreach($events as $event) {
+                    $event_start_date = ical2date($event['dtstart']);
 
-					$ano = $event['dtstart']['year'];
-					$mes = sprintf("%02d", (int)$event['dtstart']['month']);
-					$dia = sprintf("%02d", $event['dtstart']['day']);
-					$data = sprintf("%s-%s-%s", $ano, $mes, $dia);
-
-					$current_date = new DateTime(date('Y-m-d'));
-					$event_date = new DateTime($data);
-
-                    /*
-                    print_r($event);
-					var_dump($current_date);
-					var_dump($event_date);
-                    */
-
-					// only import NEXT EVENTS
-					if ($event_date >= $current_date){
+					// only import events from current week forward
+					if ($event_start_date >= $week_start_date){
 						$created_year = $event['created']['year'];
 						$created_month = sprintf("%02d", (int)$event['created']['month']);
 						$created_day = sprintf("%02d", $event['created']['day']);
