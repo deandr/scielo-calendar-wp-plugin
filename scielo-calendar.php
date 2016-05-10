@@ -141,6 +141,13 @@ if(!class_exists('SCiELOCalendar_Plugin')) {
 						$post_id = wp_insert_post( $event_post );
 
 						if((int)$post_id > 0) {
+                            // check if is a multiple day event
+                            if (intval($event['dtend']['day']) > intval($event['dtstart']['day'])){
+                                // tweak for multiple day event:
+                                // subtract one day from last day because ICAL register one day more when event ends at 00:00
+                                $event['dtend']['day'] = strval(intval($event['dtend']['day'])-1);
+                            }
+
 							add_post_meta($post_id, 'start', $event['dtstart']);
 							add_post_meta($post_id, 'end', $event['dtend']);
 							add_post_meta($post_id, 'duration', $event['duration']);

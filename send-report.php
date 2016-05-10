@@ -14,7 +14,7 @@ function send_report($period = 'week'){
     $events = get_posts($args);
 
     // always get events of current week
-    $range_start_date = strtotime("previous monday", strtotime(date('Y-m-d')));
+    $range_start_date = strtotime("previous saturday", strtotime(date('Y-m-d')));
     $range_end_date = strtotime("next saturday", strtotime(date('Y-m-d')));
 
     $current_date = strtotime(date('Y-m-d'));
