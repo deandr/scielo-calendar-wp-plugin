@@ -79,9 +79,10 @@ function send_report($period = 'week'){
         }
 
     }
-    // send email
-    send_email($event_list, $period, $total_events);
-
+    // send email if have events
+    if ($total_events > 0){
+        send_email($event_list, $period, $total_events);
+    }
 }
 
 function send_email($content, $period, $total_events){
